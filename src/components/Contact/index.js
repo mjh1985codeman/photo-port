@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { validateEmail } from "../../utils/helpers";
 
 function ContactForm() {
   //the Hook that'll manage the form data
@@ -12,16 +13,33 @@ function ContactForm() {
 
   const { name, email, message } = formState;
 
-  //we're using the setFormState function to update the formState value for the name property.
-  //We assign the value taken from the input field in the UI with e.target.value and assign this value to the
-  //property formState.name. We use the spread operator, ...formState, so we can retain the other key-value pairs in this object. Without the spread operator,
-  //the formState object would be overwritten to only contain the name: value key pair.
+  const [errorMessage, setErrorMessage] = useState("");
 
   function handleChange(e) {
-    setFormState({ ...formState, [e.target.name]: e.target.value });
-  }
+    if (e.target.name === "email") {
+      const isValid = validateEmail(e.target.value);
+      console.log(isValid);
+      // isValid conditional statement
+      if (!isValid) {
+        setErrorMessage("Your email is invalid.");
+      } else {
+        if (!e.target.value.length) {
+          setErrorMessage(`${e.target.name} is required.`);
+        } else {
+          setErrorMessage("");
+        }
+      }
+    }
+    //we're using the setFormState function to update the formState value for the name property.
+    //We assign the value taken from the input field in the UI with e.target.value and assign this value to the
+    //property formState.name. We use the spread operator, ...formState, so we can retain the other key-value pairs in this object. Without the spread operator,
+    //the formState object would be overwritten to only contain the name: value key pair.
+    if (!errorMessage) {
+      setFormState({ ...formState, [e.target.name]: e.target.value });
+    }
 
-  console.log(formState);
+    console.log("errorMessage", errorMessage);
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -38,7 +56,7 @@ function ContactForm() {
           <input
             type="text"
             defaultValue={name}
-            onChange={handleChange}
+            onBlur={handleChange}
             name="name"
           />
         </div>
@@ -48,7 +66,7 @@ function ContactForm() {
             type="email"
             defaultValue={email}
             name="email"
-            onChange={handleChange}
+            onBlur={handleChange}
           />
         </div>
         <div>
@@ -56,9 +74,15 @@ function ContactForm() {
           <textarea
             name="message"
             defaultValue={message}
-            onChange={handleChange}
+            onBlur={handleChange}
             rows="5"
           />
+          {/* only want this message to appear if the errorMessage contains an error message. We can condition this render in JSX with the following conditional statement:  */}
+          {errorMessage && (
+            <div>
+              <p className="error-text">{errorMessage}</p>
+            </div>
+          )}
           <button type="submit">Submit</button>
         </div>
       </form>
