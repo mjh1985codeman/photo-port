@@ -1,20 +1,14 @@
 import React from "react";
 import { capitalizeFirstLetter } from "../../utils/helpers";
 
-function Nav() {
-  const categories = [
-    {
-      name: "commercial",
-      description:
-        "Photos of grocery stores, food trucks, and other commercial projects",
-    },
-    { name: "portraits", description: "Portraits of people in my life" },
-    { name: "food", description: "Delicious delicacies" },
-    {
-      name: "landscape",
-      description: "Fields, farmhouses, waterfalls, and the beauty of nature",
-    },
-  ];
+function Nav(props) {
+  const {
+    categories = [],
+    setCurrentCategory,
+    currentCategory,
+    contactSelected,
+    setContactSelected,
+  } = props;
 
   const handleClick = (item) => {
     console.log(item);
@@ -34,23 +28,31 @@ function Nav() {
       </h2>
       <nav>
         <ul className="flex-row">
-          <li className="mx-2">
+          <li className={`mx-2 ${contactSelected && "navActive"}`}>
             <a
               data-testid="about"
               href="#about"
-              onClick={() => handleClick("About")}
+              onClick={() => setContactSelected(false)}
             >
               About me
             </a>
           </li>
-          <li className={"mx-2"}>
-            <span onClick={() => handleClick("Contact")}>Contact</span>
+          <li className={`mx-2 ${contactSelected && "navActive"}`}>
+            <span onClick={() => setContactSelected(true)}>Contact</span>
           </li>
           {categories.map((category) => (
-            <li className="mx-1" key={category.name}>
+            <li
+              className={`mx-1 ${
+                currentCategory.name === category.name &&
+                !contactSelected &&
+                `navActive`
+              }`}
+              key={category.name}
+            >
               <span
                 onClick={() => {
-                  handleClick(category.name);
+                  setCurrentCategory(category);
+                  setContactSelected(false);
                 }}
               >
                 {capitalizeFirstLetter(category.name)}
